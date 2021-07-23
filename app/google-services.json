@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "573059229472",
+    "project_id": "midnight-chat-app",
+    "storage_bucket": "midnight-chat-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:573059229472:android:fd1a07d84adf8ac9309945",
+        "android_client_info": {
+          "package_name": "com.finix.midnight"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "573059229472-vq6ke0md5clju95u4vdgebg9es5lfhvv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBINh87bo_byKLiuJ8iPKyFdUzgdYU8_Q8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "573059229472-vq6ke0md5clju95u4vdgebg9es5lfhvv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
