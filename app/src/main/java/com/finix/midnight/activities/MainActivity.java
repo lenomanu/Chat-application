@@ -1,8 +1,10 @@
-package com.finix.midnight;
+package com.finix.midnight.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.finix.midnight.R;
 
 public class MainActivity extends AppCompatActivity {
 
