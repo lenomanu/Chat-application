@@ -1,19 +1,35 @@
 package com.finix.midnight.activities;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Toast;
 
 import com.finix.midnight.R;
 import com.finix.midnight.databinding.ActivitySignUpBinding;
+import com.finix.midnight.utilities.Constants;
+import com.finix.midnight.utilities.PreferenceManager;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.HashMap;
 
 public class SignUpActivity extends AppCompatActivity {
     private ActivitySignUpBinding binding;
-    public String encodedImage;
+    private PreferenceManager preferenceManager;
+    private String encodedImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +37,7 @@ public class SignUpActivity extends AppCompatActivity {
         binding = ActivitySignUpBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setListeners();
+        preferenceManager = new PreferenceManager(getApplicationContext());
     }
 
     public void setListeners(){
@@ -30,14 +47,70 @@ public class SignUpActivity extends AppCompatActivity {
                 signUp();
             }
         });
+        binding.layoutImage.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+            pickImage.launch(intent);
+        });
     }
 
     public void showToast(String message){
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
     public void signUp(){
+        loading(true);
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+        HashMap<String,Object> user = new HashMap<>();
+        user.put(Constants.KEY_NAME, binding.inputName.getText().toString().trim());
+        user.put(Constants.KEY_EMAIL, binding.inputEmail.getText().toString().trim());
+        user.put(Constants.KEY_PASSWORD, binding.inputPassword.getText().toString());
+        user.put(Constants.KEY_IMAGE,encodedImage);
+        database.collection(Constants.KEY_COLLECTION_USERS).add(user).addOnSuccessListener(documentReference -> {
+            loading(false);
+            preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true);
+            preferenceManager.putString(Constants.KEY_USER_ID,documentReference.getId());
+            preferenceManager.putString(Constants.KEY_IMAGE,encodedImage);
+            preferenceManager.putString(Constants.KEY_NAME,binding.inputName.getText().toString().trim() );
+            Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+
+        }).addOnFailureListener(exception->{
+            loading(false);
+            showToast(exception.getMessage());
+        });
 
     }
+    private String encodedImage(Bitmap bitmap){
+        int previewWidth = 150;
+        int previewHeight = bitmap.getHeight() * previewWidth/bitmap.getHeight();
+        Bitmap previewBitmap = Bitmap.createScaledBitmap(bitmap,previewWidth,previewHeight,false);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        previewBitmap.compress(Bitmap.CompressFormat.JPEG,50,byteArrayOutputStream);
+        byte[] bytes = byteArrayOutputStream.toByteArray();
+        return Base64.encodeToString(bytes,Base64.DEFAULT);
+    }
+    public final ActivityResultLauncher <Intent> pickImage = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if(result.getResultCode() == RESULT_OK){
+                    if(result.getData() != null){
+                        Uri imageUri = result.getData().getData();
+                        try {
+                            InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                            binding.imageProfile.setImageBitmap(bitmap);
+                            binding.textAddImage.setVisibility(View.GONE);
+                            encodedImage = encodedImage(bitmap);
+
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            }
+    );
     public Boolean isValidSignUpDetails (){
         if(encodedImage == null){
             showToast("Select Profile picture");
@@ -60,7 +133,7 @@ public class SignUpActivity extends AppCompatActivity {
         }else if(binding.inputConfirmPassword.getText().toString().trim().isEmpty()){
             showToast("Please Confirm password");
             return false;
-        }else if(binding.inputPassword.getText().toString().trim()!=binding.inputConfirmPassword.getText().toString().trim()){
+        }else if(!binding.inputPassword.getText().toString().trim().equals(binding.inputConfirmPassword.getText().toString().trim())){
             showToast("Password and Confirm Password Must be same");
             return false;
         }else{
