@@ -16,29 +16,46 @@
         android:background="@drawable/background_content_top"
         app:layout_constraintBottom_toTopOf="@id/inputMessage"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        tools:layout_editor_absoluteX="0dp" />
+        />
+
+    <View
+        android:id="@+id/headerBackground"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/primary"
+        app:layout_constraintBottom_toTopOf="@id/viewSupporter"
+        app:layout_constraintTop_toTopOf="parent"
+         />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imageBack"
         android:layout_width="@dimen/_30sdp"
         android:layout_height="@dimen/_30sdp"
         android:src="@drawable/ic_back"
-        android:padding="@dimen/_5sdp"
+        app:tint="@color/white"
+        android:padding="@dimen/_7sdp"
         android:layout_marginLeft="@dimen/_16sdp"
         android:layout_marginStart="@dimen/_16sdp"
         android:layout_marginTop="@dimen/_12sdp"
+        android:layout_marginBottom="@dimen/_30sdp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
+    <View
+        android:id="@+id/viewSupporter"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/primary"
+        android:layout_marginTop="@dimen/_12sdp"
+        app:layout_constraintTop_toBottomOf="@id/imageBack"/>
     <TextView
         android:id="@+id/textName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textColor="@color/primary_text"
+        android:textColor="@color/white"
         android:gravity="center"
         android:ellipsize="end"
         android:maxLines="1"
-        android:textSize="@dimen/_14ssp"
+        android:textSize="@dimen/_15ssp"
         app:layout_constraintTop_toTopOf="@id/imageBack"
         app:layout_constraintBottom_toBottomOf="@id/imageBack"
         app:layout_constraintEnd_toStartOf="@id/imageInfo"
@@ -48,18 +65,17 @@
 
         />
 
-<androidx.appcompat.widget.AppCompatImageView
-    android:id="@+id/imageInfo"
-    android:layout_width="@dimen/_30sdp"
-    android:layout_height="@dimen/_30sdp"
-    android:src="@drawable/ic_info"
-    android:padding="@dimen/_5sdp"
-    android:layout_marginTop="@dimen/_12sdp"
-    android:layout_marginRight="@dimen/_16sdp"
-    android:layout_marginEnd="@dimen/_16sdp"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    />
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/imageInfo"
+        android:layout_width="@dimen/_30sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="20dp"
+        android:padding="@dimen/_5sdp"
+        app:tint="@color/white"
+        android:src="@drawable/ic_info"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chatRecyclerView"
@@ -68,9 +84,10 @@
         android:clipToPadding="false"
         android:orientation="vertical"
         android:overScrollMode="never"
+        app:stackFromEnd="true"
         android:visibility="gone"
         android:padding="@dimen/_20sdp"
-        app:layout_constraintTop_toBottomOf="@id/imageBack"
+        app:layout_constraintTop_toBottomOf="@id/viewSupporter"
         app:layout_constraintBottom_toBottomOf="@id/viewBackground"
         />
     <ProgressBar

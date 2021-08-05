@@ -10,15 +10,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.finix.midnight.databinding.ItemContainerUserBinding;
+import com.finix.midnight.listeners.UserListener;
 import com.finix.midnight.models.User;
 
 import java.util.List;
 
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHolder> {
     private final List<User> users;
+    private final UserListener userListener;
 
-    public UsersAdapter(List<User> users) {
+    public UsersAdapter(List<User> users, UserListener userListener) {
         this.users = users;
+        this.userListener = userListener;
     }
 
     @NonNull
@@ -52,6 +55,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
             binding.imageProfile.setImageBitmap(getUserImage(user.image));
             binding.textEmail.setText(user.email);
             binding.textName.setText(user.name);
+            binding.getRoot().setOnClickListener(v -> userListener.onUserClicked(user));
         }
     }
 
